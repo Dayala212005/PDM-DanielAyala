@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -52,6 +54,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ListaApp() {
+    val entries = remember { mutableStateListOf<String>() }
+    val usuario: MutableState<String> = remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,16 +65,18 @@ fun ListaApp() {
         verticalArrangement = Arrangement.Center,
 
         ) {
-        val usuario: MutableState<String> = remember { mutableStateOf("") }
-                TextField(
+        TextField(
                     value = usuario.value,
                     onValueChange = {
-                        usuario.value = it
-                    },
+                        usuario.value = it },
+                        placeholder = {Text("Nombre")},
+                        modifier = Modifier.fillMaxWidth()
                 )
+        Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = {
-
+                entries.add(usuario.value)
+                usuario.value = ""
             }
         ) {
             Text(text = "Guardar")
@@ -81,19 +87,16 @@ fun ListaApp() {
             verticalAlignment = Alignment.CenterVertically
             ) {
             Box(modifier = Modifier.weight(1f)) {
-                Text(text = "Listado de nombres y posicion ",
+                Text(text = "Listado de nombres y posicion en la lista",
                     modifier = Modifier.width(200.dp))
             }
             Button(
                 modifier = Modifier,
-                onClick = {
-
-                }
+                onClick = {entries.clear()}
             ) {
                 Text(text = "Limpiar")
             }
         }
-        val entries: List<String> = listOf("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten")
         LazyColumn(modifier = Modifier.border(width = 2.dp, color = Color.Blue, shape = RoundedCornerShape(16.dp))) {
             itemsIndexed(entries.toList()) { index, item ->
                 Row(
