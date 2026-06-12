@@ -44,6 +44,7 @@ fun TaskListScreen(
     onBack: () -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    var taskToUpdate by remember { mutableStateOf<Task?>(null) }
     val taskList by viewModel.tasks.collectAsState()
     
 
@@ -58,9 +59,12 @@ fun TaskListScreen(
         }
     ) { paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
-            items(taskList){
-                    task ->
-                TaskCard(task)
+            items(taskList) { task ->
+                TaskCard(
+                    task = task,
+                    onDelete = { viewModel.deleteTask(it) },
+                    onUpdate = { taskToUpdate = it }
+                )
                 Spacer(modifier = Modifier.height(24.dp))
             }
             item {
@@ -75,12 +79,28 @@ fun TaskListScreen(
                 onDismiss = { showDialog = false },
                 onTaskCreated = { newTitle, newDescription ->
                     val newTask = Task(
-                        id = taskList.size + 1,
+                        id = 0,
                         title = newTitle,
                         description = newDescription
                     )
                     viewModel.addTask(newTask)
                     showDialog = false
+                }
+            )
+        }
+        if (taskToUpdate != null) {
+            CreateTask(
+                initialTitle = taskToUpdate!!.title,
+                initialDescription = taskToUpdate!!.description,
+                onDismiss = { taskToUpdate = null },
+                onTaskCreated = { newTitle, newDescription ->
+                    viewModel.updateTask(
+                        taskToUpdate!!.copy(
+                            title = newTitle,
+                            description = newDescription
+                        )
+                    )
+                    taskToUpdate = null
                 }
             )
         }
@@ -90,11 +110,13 @@ fun TaskListScreen(
 
 @Composable
 fun CreateTask(
+    initialTitle: String = "",
+    initialDescription: String = "",
     onDismiss: () -> Unit,
     onTaskCreated: (String, String) -> Unit
 ){
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf(initialTitle) }
+    var description by remember { mutableStateOf(initialDescription) }
     Dialog(
         onDismissRequest = {
             onDismiss()

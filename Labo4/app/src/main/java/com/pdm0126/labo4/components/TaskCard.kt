@@ -1,10 +1,13 @@
 package com.pdm0126.labo4.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -13,11 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.pdm0126.labo4.model.Task
-
 @Composable
 fun TaskCard(
     task: Task,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDelete: (Task) -> Unit,
+    onUpdate: (Task) -> Unit
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -45,6 +49,20 @@ fun TaskCard(
             Text(
                 text = "Fecha: " + task.endDate.toString()
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(onClick = { onDelete(task) }) {
+                    Text("Eliminar")
+                }
+                Button(onClick = { onUpdate(task) }) {
+                    Text("Actualizar")
+                }
+            }
         }
     }
 }
